@@ -55,10 +55,273 @@ Widget 是不可变的，更新则意味着销毁 + 重建（build）。Stateles
 
 因此，避免无谓的 StatefulWidget 使用，是提高 Flutter 应用渲染性能最简单也是最直接的手段。
 
+---
 
+#### 生命周期
 
+**创建**
 
+```
+构造方法 -> initState -> didChangeDependencies -> build，随后完成页面渲染。
+```
 
+**更新**
 
+1，setState
 
+>当状态数据发生变化时
 
+2，didChangeDependencies
+
+>系统语言 Locale 或应用主题改变时，系统会通知 State 执行 didChangeDependencies 回调
+
+3，didUpdateWidget
+
+>当 Widget 的配置发生变化时，比如，父 Widget 触发重建（即父 Widget 的状态发生变化时），热重载时，系统会调用这个函数。
+
+**销毁**
+
+1，deactivate
+
+>组件被移除，组件不可见
+
+2，dispose
+
+>组件就要被销毁了，所以我们可以在这里进行最终的资源释放、移除监听、清理环境，等等。
+
+在 Flutter 中，我们可以利用 WidgetsBindingObserver ，通过重写生命周期回调方法，来监听 App 的生命周期并做相应的处理。
+
+```
+abstract class WidgetsBindingObserver {
+  //页面pop
+  Future<bool> didPopRoute() => Future<bool>.value(false);
+  //页面push
+  Future<bool> didPushRoute(String route) => Future<bool>.value(false);
+  //系统窗口相关改变回调，如旋转
+  void didChangeMetrics() { }
+  //文本缩放系数变化
+  void didChangeTextScaleFactor() { }
+  //系统亮度变化
+  void didChangePlatformBrightness() { }
+  //本地化语言变化
+  void didChangeLocales(List<Locale> locale) { }
+  //App生命周期变化
+  void didChangeAppLifecycleState(AppLifecycleState state) { }
+  //内存警告回调
+  void didHaveMemoryPressure() { }
+  //Accessibility相关特性回调
+  void didChangeAccessibilityFeatures() {}
+}
+```
+
+```
+
+class _MyHomePageState extends State<MyHomePage>  with WidgetsBindingObserver{
+//这里你可以再回顾下，第7篇文章“函数、类与运算符：Dart是如何处理信息的？”中关于Mixin的内容
+...
+  @override
+  @mustCallSuper
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);//注册监听器
+  }
+  @override
+  @mustCallSuper
+  void dispose(){
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);//移除监听器
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    print("$state");
+    if (state == AppLifecycleState.resumed) {
+      //do sth
+      //1.从前台退居后台，打印的是inactive->paused，但你忘了它之前的状态是resumed；
+      //2.从后台进入前台，打印的是inactive->resumed，但你忘了它之前的状态是paused
+    }
+  }
+}
+```
+
+#### Widget
+
+- Text
+
+```
+// 在一段字符串中支持多种混合展示样式。
+TextStyle blackStyle = TextStyle(fontWeight: FontWeight.normal, fontSize: 20, color: Colors.black); //黑色样式
+
+TextStyle redStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.red); //红色样式
+
+Text.rich(
+    TextSpan(
+        children: <TextSpan>[
+          TextSpan(text:'文本是视图系统中常见的控件，它用来显示一段特定样式的字符串，类似', style: redStyle), //第1个片段，红色样式 
+          TextSpan(text:'Android', style: blackStyle), //第1个片段，黑色样式 
+          TextSpan(text:'中的', style:redStyle), //第1个片段，红色样式 
+          TextSpan(text:'TextView', style: blackStyle) //第1个片段，黑色样式 
+        ]),
+  textAlign: TextAlign.center,
+);
+```
+
+- Image
+
+```
+// 加载本地资源图片，如 
+Image.asset(‘images/logo.png’)；
+
+// 加载本地（File 文件）图片，如 
+Image.file(new File(’/storage/xxx/xxx/test.jpg’))；
+
+// 加载网络图片，如 
+Image.network('http://xxx/xxx/test.gif') 
+```
+
+- FadeInImage
+
+>在加载网络图片的时候，为了提升用户的等待体验，我们往往会加入占位图、加载动画等元素，
+
+```
+FadeInImage.assetNetwork(
+  placeholder: 'assets/loading.gif', //gif占位
+  image: 'https://xxx/xxx/xxx.jpg',
+  fit: BoxFit.cover, //图片拉伸模式
+  width: 200,
+  height: 200,
+)
+```
+
+- CachedNetworkImage
+
+>支持缓存到文件系统
+
+```
+CachedNetworkImage(
+        imageUrl: "http://xxx/xxx/jpg",
+        placeholder: (context, url) => CircularProgressIndicator(),
+        errorWidget: (context, url, error) => Icon(Icons.error),
+     )
+```
+
+#### ListView
+
+```
+// 如果提前设置好 itemExtent，ListView 则可以提前计算好每一个列表项元素的相对位置，以及自身的视图高度，省去了无谓的计算。
+ListView.builder(
+    itemCount: 100, //元素个数
+    itemExtent: 50.0, //列表项高度
+    itemBuilder: (BuildContext context, int index) => ListTile(title: Text("title $index"), subtitle: Text("body $index"))
+);
+
+// 使用 ListView.separated 设置分割线。
+ListView.separated(
+    itemCount: 100,
+    separatorBuilder: (BuildContext context, int index) => index %2 ==0? Divider(color: Colors.green) : Divider(color: Colors.red),//index为偶数，创建绿色分割线；index为奇数，则创建红色分割线
+    itemBuilder: (BuildContext context, int index) => ListTile(title: Text("title $index"), subtitle: Text("body $index"))//创建子Widget
+)
+```
+
+**Flutter 是如何解决多 ListView 嵌套时，页面滑动效果不一致的问题的呢？**
+
+>在 Flutter 中有一个专门的控件 CustomScrollView，用来处理多个需要自定义滚动效果的 Widget。
+>在 CustomScrollView 中，这些彼此独立的、可滚动的 Widget 被统称为 Sliver。
+>比如，ListView 的 Sliver 实现为 SliverList，AppBar 的 Sliver 实现为 SliverAppBar。
+>这些 Sliver 不再维护各自的滚动状态，而是交由 CustomScrollView 统一管理，最终实现滑动效果的一致性。
+
+```
+CustomScrollView(
+  slivers: <Widget>[
+    SliverAppBar(//SliverAppBar作为头图控件
+      title: Text('CustomScrollView Demo'),//标题
+      floating: true,//设置悬浮样式
+      flexibleSpace: Image.network("https://xx.jpg",fit:BoxFit.cover),//设置悬浮头图背景
+      expandedHeight: 300,//头图控件高度
+    ),
+    SliverList(//SliverList作为列表控件
+      delegate: SliverChildBuilderDelegate(
+            (context, index) => ListTile(title: Text('Item #$index')),//列表项创建方法
+        childCount: 100,//列表元素个数
+      ),
+    ),
+  ]);
+```
+
+**在某些情况下，我们希望获取列表是否已经滑到底（顶）了？如何快速回到列表顶部？列表滚动是否已经开始，或者是否已经停下来了？**
+
+ListView 的组件控制器则是 ScrollControler，我们可以通过它来获取视图的滚动信息，更新视图的滚动位置。
+
+```
+class MyAPPState extends State<MyApp> {
+  ScrollController _controller;//ListView控制器
+  bool isToTop = false;//标示目前是否需要启用"Top"按钮
+  @override
+  void initState() {
+    _controller = ScrollController();
+    _controller.addListener(() {//为控制器注册滚动监听方法
+      if(_controller.offset > 1000) {//如果ListView已经向下滚动了1000，则启用Top按钮
+        setState(() {isToTop = true;});
+      } else if(_controller.offset < 300) {//如果ListView向下滚动距离不足300，则禁用Top按钮
+        setState(() {isToTop = false;});
+      }
+    });
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        ...
+        //顶部Top按钮，根据isToTop变量判断是否需要注册滚动到顶部的方法
+        RaisedButton(onPressed: (isToTop ? () {
+                  if(isToTop) {
+                    _controller.animateTo(.0,
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.ease
+                    );//做一个滚动到顶部的动画
+                  }
+                }:null),child: Text("Top"),)
+        ...
+        ListView.builder(
+                controller: _controller,//初始化传入控制器
+                itemCount: 100,//列表元素总数
+                itemBuilder: (context, index) => ListTile(title: Text("Index : $index")),//列表项构造方法
+               )      
+        ...   
+    );
+
+  @override
+  void dispose() {
+    _controller.dispose(); //销毁控制器
+    super.dispose();
+  }
+}
+```
+
+**为了监听滚动类型的事件，我们需要将 NotificationListener(是一个 Widget) 添加为 ListView 的父容器，从而捕获 ListView 中的滚动回调**
+
+```
+
+Widget build(BuildContext context) {
+  return MaterialApp(
+    title: 'ScrollController Demo',
+    home: Scaffold(
+      appBar: AppBar(title: Text('ScrollController Demo')),
+      body: NotificationListener<ScrollNotification>(//添加NotificationListener作为父容器
+        onNotification: (scrollNotification) {//注册通知回调
+          if (scrollNotification is ScrollStartNotification) {//滚动开始
+            print('Scroll Start');
+          } else if (scrollNotification is ScrollUpdateNotification) {//滚动位置更新
+            print('Scroll Update');
+          } else if (scrollNotification is ScrollEndNotification) {//滚动结束
+            print('Scroll End');
+          }
+        },
+        child: ListView.builder(
+          itemCount: 30,//列表元素个数
+          itemBuilder: (context, index) => ListTile(title: Text("Index : $index")),//列表项创建方法
+        ),
+      )
+    )
+  );
+}
+```
