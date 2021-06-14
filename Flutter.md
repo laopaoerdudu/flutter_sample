@@ -324,3 +324,83 @@ Widget build(BuildContext context) {
   );
 }
 ```
+
+#### 单子 Widget 布局：Container、Padding 与 Center
+
+**Flutter 的 Container 仅能包含一个子 Widget**
+
+```
+Container(
+  child: Text('Container（容器）在UI框架中是一个很常见的概念，Flutter也不例外。'),
+  padding: EdgeInsets.all(18.0), // 内边距
+  margin: EdgeInsets.all(44.0), // 外边距
+  width: 180.0,
+  height: 240,
+  alignment: Alignment.center, // 子Widget居中对齐
+  decoration: BoxDecoration( //Container样式
+    color: Colors.red, // 背景色
+    borderRadius: BorderRadius.circular(10.0), // 圆角边框
+  ),
+)
+
+
+Padding(
+  padding: EdgeInsets.all(44.0),
+  child: Text('Container（容器）在UI框架中是一个很常见的概念，Flutter也不例外。'),
+);
+
+
+Scaffold(
+  body: Center(child: Text("Hello")) // This trailing comma makes auto-formatting nicer for build methods.
+);
+```
+
+#### 多子 Widget 布局：Row、Column 与 Expanded
+
+>单纯使用 Row 和 Column 控件，在子 Widget 的尺寸较小时，无法将容器填满，视觉样式比较难看。
+>对于这样的场景，我们可以通过 Expanded 控件，来制定分配规则填满容器的剩余空间。
+
+我们可以根据主轴与纵轴，设置子 Widget 在这两个方向上的对齐规则 mainAxisAlignment 与 crossAxisAlignment。
+比如，主轴方向 start 表示靠左对齐、center 表示横向居中对齐、end 表示靠右对齐、spaceEvenly 表示按固定间距对齐；
+而纵轴方向 start 则表示靠上对齐、center 表示纵向居中对齐、end 表示靠下对齐。
+
+#### 层叠 Widget 布局：Stack 与 Positioned
+
+Stack 提供了层叠布局的容器，而 Positioned 则提供了设置子 Widget 位置的能力。
+
+>Positioned 控件只能在 Stack 中使用，在其他容器中使用会报错。
+
+
+#### Summary
+
+Flutter与原生在不同的布局行为上定义了常见的基本容器，不过对待特殊的布局样式，原生可以通过设置基本容器的属性搞定，
+而Flutter则会选择在外层再包装一层布局样式，通过组合搞定。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
