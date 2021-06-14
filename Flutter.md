@@ -300,7 +300,6 @@ class MyAPPState extends State<MyApp> {
 **为了监听滚动类型的事件，我们需要将 NotificationListener(是一个 Widget) 添加为 ListView 的父容器，从而捕获 ListView 中的滚动回调**
 
 ```
-
 Widget build(BuildContext context) {
   return MaterialApp(
     title: 'ScrollController Demo',
