@@ -370,6 +370,13 @@ Stack 提供了层叠布局的容器，而 Positioned 则提供了设置子 Widg
 
 >Positioned 控件只能在 Stack 中使用，在其他容器中使用会报错。
 
+#### Flutter 由 ThemeData 来统一管理主题的配置信息。
+
+
+
+
+
+
 
 #### Summary
 
