@@ -358,11 +358,11 @@ Scaffold(
 #### 多子 Widget 布局：Row、Column 与 Expanded
 
 >单纯使用 Row 和 Column 控件，在子 Widget 的尺寸较小时，无法将容器填满，视觉样式比较难看。
->对于这样的场景，我们可以通过 Expanded 控件，来制定分配规则填满容器的剩余空间。
+>对于这样的场景，我们可以通过 Expanded(类似于 Android 的百分比) 控件，来制定分配规则填满容器的剩余空间。
 
 我们可以根据主轴与纵轴，设置子 Widget 在这两个方向上的对齐规则 mainAxisAlignment 与 crossAxisAlignment。
 比如，主轴方向 start 表示靠左对齐、center 表示横向居中对齐、end 表示靠右对齐、spaceEvenly 表示按固定间距对齐；
-而纵轴方向 start 则表示靠上对齐、center 表示纵向居中对齐、end 表示靠下对齐。
+而纵轴方向 start 则表示靠上对齐、center 表示纵向居中对齐、end 表示靠下对齐。（这说的都是 Row 方式的排列）
 
 #### 层叠 Widget 布局：Stack 与 Positioned
 
