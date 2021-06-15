@@ -372,11 +372,76 @@ Stack 提供了层叠布局的容器，而 Positioned 则提供了设置子 Widg
 
 #### Flutter 由 ThemeData 来统一管理主题的配置信息。
 
+#### 依赖管理
 
+Flutter 并没有像 Android 那样预先定义资源的目录结构，所以我们可以把资源存放在项目中的任意目录下，
+只需要使用根目录下的 pubspec.yaml 文件，对这些资源的所在位置进行显式声明就可以了。
 
+在 Flutter 中，资源采用先声明后使用的机制，在 pubspec.yaml 显式地声明资源路径后，才可以使用
 
+pubspec.yaml 是包的配置文件，包含了包的元数据（比如，包的名称和版本）、
+运行环境（也就是 Dart SDK 与 Fluter SDK 版本）、外部依赖、内部配置（比如，资源管理）。
 
+```
+flutter:
+  assets:
+    - assets/background.jpg   #挨个指定资源路径
+    - assets/loading.gif  #挨个指定资源路径
+    - assets/result.json  #挨个指定资源路径
+    - assets/icons/    #子目录批量指定
+    - assets/ #根目录也是可以批量指定的
 
+// 字体
+fonts:
+  - family: RobotoCondensed  #字体名字
+    fonts:
+      - asset: assets/fonts/RobotoCondensed-Regular.ttf #普通字体
+      - asset: assets/fonts/RobotoCondensed-Italic.ttf 
+        style: italic  #斜体
+      - asset: assets/fonts/RobotoCondensed-Bold.ttf 
+        weight: 700  #粗体
+```
+
+由于 Flutter 启动时依赖原生系统运行环境，因此我们还需要去原生工程中，设置相应的 App 启动图标和启动图。
+
+与 Android 中的 JCenter/Maven、Dart 提供了官方的包仓库 Pub。通过 Pub，我们可以很方便地查找到有用的第三方包。
+
+Dart 提供包管理工具 Pub 的真正目的是，让你能够找到真正好用的、经过线上大量验证的库。
+
+我们可以访问 https://pub.dev/ 来获取可用的第三方包
+
+```
+dependencies:
+  package1:
+    path: ../package1/  #路径依赖
+  date_format:
+    git:
+      url: https://github.com/xxx/package2.git #git依赖
+```
+
+对于依赖的指定，可以以区间的方式确定版本兼容范围，
+也可以指定本地路径、Git、Pub 这三种不同的数据源，
+包管理工具会找出同时满足每个依赖包版本约束的包版本，然后依次下载，
+并通过.packages 文件建立下载缓存与包名的映射，
+最后统一将当前状态下，实际安装的各个包的具体来源和版本号记录至 pubspec.lock 文件。
+
+在完成了所有依赖包的下载后，Pub 会在应用的根目录下创建.packages 文件，将依赖的包名与系统缓存中的包文件路径进行映射，方便后续维护。
+
+**pubspec.yaml、.packages 与 pubspec.lock 这三个文件，在包管理中的具体作用是什么？**
+
+- pubspec.yaml 是声明依赖哪些包的配置文件
+
+- .packages 是表示包在本地目录缓存的地址
+
+- pubspec.lock 是把依赖锁死的文件
+
+只有 pubspec.yaml 需要自己编写 其它两个文件会自动生成。
+
+** .packages 与 pubspec.lock 是否需要做代码版本管理呢？为什么？**
+
+- pubspec.lock 需要做版本管理，因为 lock 文件把版本锁定，统一工程环境
+
+- .packages不需要版本管理，因为跟本地环境有关，无法做到统一
 
 #### Summary
 
