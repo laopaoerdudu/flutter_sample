@@ -98,10 +98,10 @@ class UpdatedItemWidget extends StatelessWidget {
     return Row(children: <Widget>[
       Padding(
           padding: EdgeInsets.all(10),
-          child: ClipRRect(
+          child: ClipRRect( // 圆角矩形裁剪控件
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(model.appIcon, width: 80, height: 80))),
-      Expanded(
+      Expanded( // 百分比，用来拉伸中间区域
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
