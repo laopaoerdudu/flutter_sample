@@ -443,6 +443,26 @@ dependencies:
 
 - .packages不需要版本管理，因为跟本地环境有关，无法做到统一
 
+#### 数据的跨层(Flutter 这样大量依靠组合 Widget )传递
+
+Flutter 提供了三种方案：InheritedWidget、Notification 和 EventBus
+
+>Theme 类是通过 InheritedWidget 实现的典型案例。
+>在子 Widget 中通过 Theme.of 方法找到上层 Theme 的 Widget，获取到其属性的同时，建立子 Widget 和上层父 Widget 的观察者关系，
+>当上层父 Widget 属性修改的时候，子 Widget 也会触发更新
+
+```
+// 通过 Theme 去访问当前界面的样式风格，从而进行样式复用
+Theme.of(context).primaryColor
+```
+
+InheritedWidget 的数据流动方式是从父 Widget 到子 Widget 逐层传递，Notificaiton 则恰恰相反，
+数据流动方式是从子 Widget 向上传递至父 Widget。这样的数据传递机制适用于子 Widget 状态变更，发送通知上报的场景。
+
+这些组件间不存在父子关系。这时，事件总线 EventBus 就登场了。发布者和订阅者之间无需有父子关系，
+甚至非 Widget 对象也可以发布 / 订阅。这些特点与其他平台的事件总线机制是类似的。
+EventBus 的使用方式灵活，可以支持任意对象的传递。
+
 #### Summary
 
 Flutter与原生在不同的布局行为上定义了常见的基本容器，不过对待特殊的布局样式，原生可以通过设置基本容器的属性搞定，

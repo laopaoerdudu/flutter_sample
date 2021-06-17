@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sample/router.dart';
 import 'package:flutter_sample/theme.dart';
 
 import 'data/DataTransferHomePage.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(RouterApp());
 }
 
 class MyApp extends StatelessWidget {
