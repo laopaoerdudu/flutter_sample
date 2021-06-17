@@ -23,9 +23,18 @@ class DataTransferHomePage extends StatelessWidget {
         ),
         bottomNavigationBar: TabBar(
           tabs: [
-            Tab(icon: Icon(Icons.home),text: "InheritedWidget",),
-            Tab(icon: Icon(Icons.rss_feed),text: "Notification",),
-            Tab(icon: Icon(Icons.perm_identity),text: "EventBus",)
+            Tab(
+              icon: Icon(Icons.home),
+              text: "InheritedWidget",
+            ),
+            Tab(
+              icon: Icon(Icons.rss_feed),
+              text: "Notification",
+            ),
+            Tab(
+              icon: Icon(Icons.perm_identity),
+              text: "EventBus",
+            )
           ],
           unselectedLabelColor: Colors.blueGrey,
           labelColor: Colors.blue,

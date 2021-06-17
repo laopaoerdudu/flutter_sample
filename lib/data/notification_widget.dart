@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomNotification extends Notification {
   CustomNotification(this.msg);
+
   final String msg;
 }
 
@@ -18,23 +19,25 @@ class CustomChild extends StatelessWidget {
 
 class NotificationWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState()=>_NotificationState();
+  State<StatefulWidget> createState() => _NotificationState();
 }
 
 class _NotificationState extends State<NotificationWidget> {
   String _msg = "通知：";
+
   @override
   Widget build(BuildContext context) {
     //监听通知
-    return NotificationListener<CustomNotification> (
+    return NotificationListener<CustomNotification>(
         onNotification: (notification) {
-          setState(() {_msg += notification.msg+"  ";});
+          setState(() {
+            _msg += notification.msg + "  ";
+          });
           throw '';
         },
-        child:Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text(_msg),CustomChild()],
-        )
-    );
+          children: <Widget>[Text(_msg), CustomChild()],
+        ));
   }
 }
