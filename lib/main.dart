@@ -5,9 +5,10 @@ import 'package:flutter_sample/router.dart';
 import 'package:flutter_sample/theme.dart';
 
 import 'data/DataTransferHomePage.dart';
+import 'lifecycle/page1.dart';
 
 void main() {
-  runApp(RouterApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: defaultTargetPlatform == TargetPlatform.iOS ? kIOSTheme : kAndroidTheme,
-        home: DataTransferHomePage(title: 'Data sharing sample')
+        home: Page1()
     );
   }
 }

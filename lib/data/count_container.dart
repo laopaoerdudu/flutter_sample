@@ -17,8 +17,7 @@ class _CounterPageState extends State<CounterPage> {
   @override
   Widget build(BuildContext context) {
     return CountContainer(
-        //increment: _incrementCounter,
-        model: this,
+        state: this,
         increment: _incrementCounter,
         child: Counter());
   }
@@ -29,19 +28,20 @@ class CountContainer extends InheritedWidget {
       context.dependOnInheritedWidgetOfExactType<CountContainer>()
           as CountContainer;
 
-  final _CounterPageState model;
+  // 保留 state 的引用
+  final _CounterPageState state;
 
   final Function() increment;
 
   CountContainer({
     Key? key,
-    required this.model,
+    required this.state,
     required this.increment,
     required Widget child,
   }) : super(key: key, child: child);
 
   @override
-  bool updateShouldNotify(CountContainer oldWidget) => model != oldWidget.model;
+  bool updateShouldNotify(CountContainer oldWidget) => state.count != oldWidget.state.count;
 }
 
 class Counter extends StatelessWidget {
@@ -54,7 +54,7 @@ class Counter extends StatelessWidget {
         title: Text("InheritedWidget demo"),
       ),
       body: Text(
-        'You have pushed the button this many times: ${state.model.count}',
+        'You have pushed the button this many times: ${state.state.count}',
       ),
       floatingActionButton: FloatingActionButton(onPressed: state.increment),
     );
